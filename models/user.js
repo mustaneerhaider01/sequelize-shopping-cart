@@ -48,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
           archived: false,
         },
       },
-    }
+    },
   );
 
   User.beforeCreate((user) => {
@@ -63,6 +63,11 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = (models) => {
     User.hasOne(models.Carts, {
       as: "cart",
+      foreignKey: "fk_user_id",
+    });
+
+    User.hasOne(models.Orders, {
+      as: "order",
       foreignKey: "fk_user_id",
     });
   };

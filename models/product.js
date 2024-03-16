@@ -67,6 +67,11 @@ module.exports = (sequelize, DataTypes) => {
       as: "cartItems",
       foreignKey: "fk_product_id",
     });
+
+    Product.hasMany(models.OrderItems, {
+      as: "orderItems",
+      foreignKey: "fk_product_id",
+    });
   };
 
   Product.getOne = async (productId, transaction) => {
