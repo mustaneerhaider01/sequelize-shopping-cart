@@ -46,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
           archived: false,
         },
       },
-    },
+    }
   );
 
   CartItem.beforeCreate((cartItem) => {

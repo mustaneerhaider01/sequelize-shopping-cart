@@ -8,7 +8,6 @@ module.exports = {
     if (req.body.productId) {
       req.body.productId = Number(req.body.productId);
     }
-
     const { error } = validateAddCartItem.validate(req.body, {
       errors: { label: "key", wrap: { label: false } },
     });

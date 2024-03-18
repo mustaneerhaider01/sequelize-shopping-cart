@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       amount: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
       },
       archived: {
@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
           archived: false,
         },
       },
-    },
+    }
   );
 
   OrderItem.beforeCreate((orderItem) => {

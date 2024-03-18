@@ -4,12 +4,14 @@ const {
   validateSignup,
   validateLogin,
 } = require("../validations/validators/user");
+const isAuthenticated = require("../middlewares/isAuthenticated");
 const cartRouter = require("./cart");
-const isAuthenticated = require("../middlewares/is-auth");
+const orderRouter = require("./order");
 
 const router = express.Router();
 
 router.use("/cart", isAuthenticated, cartRouter);
+router.use("/orders", isAuthenticated, orderRouter);
 
 router.post("/signup", validateSignup, userController.signup);
 router.post("/login", validateLogin, userController.login);

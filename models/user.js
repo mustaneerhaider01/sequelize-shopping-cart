@@ -66,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "fk_user_id",
     });
 
-    User.hasOne(models.Orders, {
+    User.hasMany(models.Orders, {
       as: "order",
       foreignKey: "fk_user_id",
     });

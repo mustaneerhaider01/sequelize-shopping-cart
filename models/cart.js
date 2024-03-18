@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
           archived: false,
         },
       },
-    },
+    }
   );
 
   Cart.beforeCreate((cart) => {
@@ -78,8 +78,20 @@ module.exports = (sequelize, DataTypes) => {
     return cart;
   };
 
+  Cart.structurizeCartItems = (cartItems) => {
+    const structuredCartItems = cartItems.map((cartItem) => ({
+      id: cartItem.id,
+      quantity: cartItem.quantity,
+      name: cartItem.product.title,
+      image: cartItem.product.image,
+      price: cartItem.quantity * parseFloat(cartItem.product.price),
+    }));
+
+    return structuredCartItems;
+  };
+
   Cart.getUserCartItems = async (userId, transaction) => {
-    const cart = await Cart.findOne({
+    const cart = await Cart.findAll({
       attributes: [],
       include: [
         {
@@ -91,7 +103,7 @@ module.exports = (sequelize, DataTypes) => {
               model: Models.products,
               as: "product",
               required: false,
-              attributes: ["title", "image", "price"],
+              attributes: ["id", "title", "image", "price"],
             },
           ],
         },
@@ -102,19 +114,7 @@ module.exports = (sequelize, DataTypes) => {
       transaction,
     });
 
-    if (!cart) {
-      throw new ApiError(404, "Cart not found.");
-    }
-
-    const structuredCartItems = cart.cartItems.map((cartItem) => ({
-      id: cartItem.id,
-      quantity: cartItem.quantity,
-      name: cartItem.product.title,
-      image: cartItem.product.image,
-      price: cartItem.quantity * parseFloat(cartItem.product.price),
-    }));
-
-    return structuredCartItems;
+    return cart[0] ? cart[0].cartItems : [];
   };
 
   return Cart;

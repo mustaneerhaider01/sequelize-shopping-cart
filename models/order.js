@@ -5,6 +5,7 @@ const moment = require("moment");
 const tableName = "orders";
 
 module.exports = (sequelize, DataTypes) => {
+  const Models = sequelize.models;
   const Order = sequelize.define(
     tableName,
     {
@@ -19,8 +20,9 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       totalAmount: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
+        defaultValue: 0,
       },
       archived: {
         type: DataTypes.BOOLEAN,
@@ -41,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
           archived: false,
         },
       },
-    },
+    }
   );
 
   Order.beforeCreate((order) => {
@@ -63,6 +65,48 @@ module.exports = (sequelize, DataTypes) => {
       as: "orderItems",
       foreignKey: "fk_order_id",
     });
+  };
+
+  Order.structurizeOrders = (orders) => {
+    const structuredOrders = (orders = orders.map((order) => ({
+      orderId: order.id,
+      totalAmount: parseFloat(order.totalAmount),
+      items: order.orderItems.map((orderItem) => ({
+        id: orderItem.id,
+        amount: parseFloat(orderItem.amount),
+        name: orderItem.product.title,
+        image: orderItem.product.image,
+      })),
+    })));
+
+    return structuredOrders;
+  };
+
+  Order.getUserOrders = async (userId, transaction) => {
+    const orders = await Order.findAll({
+      attributes: ["id", "totalAmount"],
+      include: [
+        {
+          model: Models.order_items,
+          as: "orderItems",
+          attributes: ["id", "amount"],
+          include: [
+            {
+              model: Models.products,
+              as: "product",
+              required: false,
+              attributes: ["title", "image"],
+            },
+          ],
+        },
+      ],
+      where: {
+        fk_user_id: Number(userId),
+      },
+      transaction,
+    });
+
+    return orders;
   };
 
   return Order;

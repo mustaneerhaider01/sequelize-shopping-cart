@@ -18,7 +18,7 @@ module.exports = {
       const existingCartItem = await CartItems.getOne(
         cart.id,
         productId,
-        transaction,
+        transaction
       );
 
       let successResMessage;
@@ -45,7 +45,7 @@ module.exports = {
               archived: false,
               updatedAt: currDate,
             },
-            { transaction },
+            { transaction }
           );
         }
 
@@ -56,7 +56,7 @@ module.exports = {
             quantity: existingCartItem.quantity + 1,
             updatedAt: currDate,
           },
-          { transaction },
+          { transaction }
         );
 
         successResMessage = "Item quantity increased";
@@ -102,7 +102,7 @@ module.exports = {
             archived: true,
             updatedAt: currDate,
           },
-          { transaction },
+          { transaction }
         );
 
         successResMessage = "Item removed from cart";
@@ -112,7 +112,7 @@ module.exports = {
             quantity: cartItem.quantity - 1,
             updatedAt: currDate,
           },
-          { transaction },
+          { transaction }
         );
 
         successResMessage = "Item quantity decreased";
@@ -132,7 +132,10 @@ module.exports = {
   },
   cartItems: async (req, res, next) => {
     try {
-      const cartItems = await Carts.getUserCartItems(req.user.id);
+      let cartItems = await Carts.getUserCartItems(req.user.id);
+
+      cartItems =
+        cartItems.length === 0 ? [] : Carts.structurizeCartItems(cartItems);
 
       res.send({
         status: 200,

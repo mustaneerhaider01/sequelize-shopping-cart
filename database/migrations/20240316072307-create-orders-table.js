@@ -16,8 +16,9 @@ module.exports = {
         allowNull: false,
       },
       totalAmount: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DECIMAL(10, 2),
         allowNull: false,
+        defaultValue: 0,
       },
       archived: {
         type: Sequelize.BOOLEAN,
