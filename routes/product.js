@@ -12,6 +12,7 @@ router.post(
   productController.addProduct
 );
 router.get("/all", isAuthenticated, productController.getAll);
+router.get("/search", isAuthenticated, productController.search);
 router.get("/:productId", isAuthenticated, productController.getOne);
 router.delete(
   "/:productId/delete",

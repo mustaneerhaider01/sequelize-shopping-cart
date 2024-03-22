@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
           archived: false,
         },
       },
-    },
+    }
   );
 
   Product.beforeCreate((product) => {
@@ -72,6 +72,30 @@ module.exports = (sequelize, DataTypes) => {
       as: "orderItems",
       foreignKey: "fk_product_id",
     });
+  };
+
+  Product.structurizeProducts = (products) => {
+    const structuredProducts = products.map((product) => ({
+      id: product.id,
+      title: product.title,
+      price: parseFloat(product.price),
+      image: product.image,
+      description: product.description,
+    }));
+
+    return structuredProducts;
+  };
+
+  Product.structurizeProduct = (product) => {
+    const structuredProduct = {
+      id: product.id,
+      title: product.title,
+      price: parseFloat(product.price),
+      image: product.image,
+      description: product.description,
+    };
+
+    return structuredProduct;
   };
 
   Product.getOne = async (productId, transaction) => {

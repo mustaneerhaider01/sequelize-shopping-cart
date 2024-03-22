@@ -1,3 +1,4 @@
+const { where, fn, col, Op } = require("sequelize");
 const { Products, sequelize } = require("../models");
 
 module.exports = {
@@ -18,7 +19,7 @@ module.exports = {
           createdAt: currDate,
           updatedAt: currDate,
         },
-        { transaction },
+        { transaction }
       );
 
       await transaction.commit();
@@ -40,10 +41,7 @@ module.exports = {
     try {
       let products = await Products.findAll();
 
-      products = products.map((product) => ({
-        ...product.get({ plain: true }),
-        price: parseFloat(product.price),
-      }));
+      products = Products.structurizeProducts(products);
 
       res.send({
         status: 200,
@@ -63,10 +61,7 @@ module.exports = {
 
       let product = await Products.getOne(productId);
 
-      product = {
-        ...product.get({ plain: true }),
-        price: parseFloat(product.price),
-      };
+      product = Products.structurizeProduct(product);
 
       res.send({
         status: 200,
@@ -95,7 +90,7 @@ module.exports = {
           archived: true,
           updatedAt: currDate,
         },
-        { transaction },
+        { transaction }
       );
 
       await transaction.commit();
@@ -107,6 +102,34 @@ module.exports = {
       });
     } catch (err) {
       await transaction.rollback();
+      next(err);
+    }
+  },
+  search: async (req, res, next) => {
+    try {
+      const {
+        query: { q },
+      } = req;
+
+      let products = await Products.findAll({
+        where: {
+          title: where(fn("lower", col("title")), {
+            [Op.like]: `%${q.toLowerCase()}%`,
+          }),
+        },
+      });
+
+      products = Products.structurizeProducts(products);
+
+      res.send({
+        status: 200,
+        success: true,
+        message: "Products fetched",
+        data: {
+          products,
+        },
+      });
+    } catch (err) {
       next(err);
     }
   },
